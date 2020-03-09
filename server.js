@@ -27,13 +27,16 @@ function runSearch() {
       type: "rawlist",
       message: "What would you like to do?",
       choices: [
-        "Add a department",
-        "Add a role",
-        "Add an employee",
         "View all departments",
         "View all employees",
         "View all roles",
         "Update employee roles",
+        "Add a department",
+        "Add a role",
+        "Add an employee",
+        "Remove an employee",
+        "Remove a role",
+        "Remove a department",
         "Exit application"
       ]
     })
@@ -49,6 +52,18 @@ function runSearch() {
 
         case "Add an employee":
           addEmployee();
+          break;
+
+        case "Remove a department":
+          removeDepartment();
+          break;
+
+        case "Remove a role":
+          removeRole();
+          break;
+
+        case "Remove an employee":
+          removeEmployee();
           break;
 
         case "View all departments":
