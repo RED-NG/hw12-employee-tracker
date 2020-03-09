@@ -83,8 +83,64 @@ function runSearch() {
           break;
 
         case "Exit application":
-          exitApp();
+          connection.end();
           break;
       }
     });
 }
+
+function addDepartment() {
+  inquirer
+    .prompt({
+      name: "name",
+      type: "input",
+      message: "add a department"
+    })
+    .then(function(res) {
+      connection.query(
+        "INSERT INTO department (name) VALUE (?)",
+        res.name,
+        function(err, res) {
+          if (err) throw err;
+          viewDepartments();
+        }
+      );
+    });
+}
+
+function addRole() {}
+
+function addEmployee() {}
+
+function removeDepartment() {}
+
+function removeRole() {}
+
+function removeEmployee() {}
+
+function viewDepartments() {
+  connection.query(`SELECT * FROM department`, (err, departments) => {
+    if (err) throw err;
+    console.log(departments);
+    inquirer
+      .prompt([
+        {
+          name: "action",
+          message: "Type yes and hit enter to go back to the search prompt"
+        }
+      ])
+      .then(answer => {
+        if (answer.action) {
+          runSearch();
+        }
+      });
+  });
+}
+
+function viewEmployees() {}
+
+function viewRoles() {}
+
+function updateRoles() {}
+
+function exitApp() {}
