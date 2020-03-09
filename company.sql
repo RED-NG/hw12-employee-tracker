@@ -23,10 +23,8 @@ CREATE TABLE employee (
     firstName VARCHAR(30) NOT NULL,
     lastName VARCHAR(30) NOT NULL,
     roleID INT,
-    managerID INT,
 	PRIMARY KEY (employeeID),
-    FOREIGN KEY (roleID) REFERENCES role (roleID),
-    FOREIGN KEY (managerID) REFERENCES department (departmentID)
+    FOREIGN KEY (roleID) REFERENCES role (roleID)
 );
 
 INSERT INTO department(name) VALUES ("Marketing");

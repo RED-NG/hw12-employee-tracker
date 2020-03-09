@@ -1,5 +1,6 @@
-var mysql = require("mysql");
-var inquirer = require("inquirer");
+const mysql = require("mysql");
+const inquirer = require("inquirer");
+const table = require("console.table");
 
 var connection = mysql.createConnection({
   host: "localhost",
@@ -121,7 +122,8 @@ function removeEmployee() {}
 function viewDepartments() {
   connection.query(`SELECT * FROM department`, (err, departments) => {
     if (err) throw err;
-    console.log(departments);
+    const newTable = table.getTable(departments);
+    console.log(newTable);
     inquirer
       .prompt([
         {
@@ -137,10 +139,44 @@ function viewDepartments() {
   });
 }
 
-function viewEmployees() {}
+function viewEmployees() {
+  connection.query(`SELECT * FROM employee`, (err, employee) => {
+    if (err) throw err;
+    const newTable = table.getTable(employee);
+    console.log(newTable);
+    inquirer
+      .prompt([
+        {
+          name: "action",
+          message: "Type yes and hit enter to go back to the search prompt"
+        }
+      ])
+      .then(answer => {
+        if (answer.action) {
+          runSearch();
+        }
+      });
+  });
+}
 
-function viewRoles() {}
+function viewRoles() {
+  connection.query(`SELECT * FROM role`, (err, role) => {
+    if (err) throw err;
+    const newTable = table.getTable(role);
+    console.log(newTable);
+    inquirer
+      .prompt([
+        {
+          name: "action",
+          message: "Type yes and hit enter to go back to the search prompt"
+        }
+      ])
+      .then(answer => {
+        if (answer.action) {
+          runSearch();
+        }
+      });
+  });
+}
 
 function updateRoles() {}
-
-function exitApp() {}
