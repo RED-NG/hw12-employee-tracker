@@ -12,7 +12,7 @@ var connection = mysql.createConnection({
 
   // Your password
   password: "codingbootcamp1",
-  database: "employees"
+  database: "company_trackerDB"
 });
 
 connection.connect(function(err) {

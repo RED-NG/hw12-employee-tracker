@@ -1,0 +1,24 @@
+{
+  "name": "hw12-employee-tracker",
+  "version": "1.0.0",
+  "description": "Application that updates, deletes and views all employees, roles and departments in a company.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RED-NG/hw12-employee-tracker.git"
+  },
+  "author": "Philip Ng",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RED-NG/hw12-employee-tracker/issues"
+  },
+  "homepage": "https://github.com/RED-NG/hw12-employee-tracker#readme",
+  "dependencies": {
+    "inquirer": "^7.0.6",
+    "mysql": "^2.18.1"
+  }
+}
