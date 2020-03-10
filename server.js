@@ -111,72 +111,107 @@ function addDepartment() {
 
 function addRole() {}
 
-function addEmployee() {}
+function addEmployee() {
+  inquirer
+    .prompt([
+      {
+        name: "firstName",
+        message: "What is employees first name?"
+      },
+      {
+        name: "lastName",
+        message: "What is employees last name?"
+      },
+      {
+        name: "position",
+        message: "What is employees position within the company?"
+      },
+      {
+        name: "manager",
+        message:
+          "Who is their manager? Enter the id of the manager (enter 6, 7, 8, 15, or 17)"
+      }
+    ])
+    .then(answer => {
+      const firstName = answer.firstName;
+      const lastName = answer.lastName;
+      const position = answer.position;
+      const manager = answer.manager;
 
-function removeDepartment() {}
-
-function removeRole() {}
-
-function removeEmployee() {}
-
-function viewDepartments() {
-  connection.query(`SELECT * FROM department`, (err, departments) => {
-    if (err) throw err;
-    const newTable = table.getTable(departments);
-    console.log(newTable);
-    inquirer
-      .prompt([
-        {
-          name: "action",
-          message: "Type yes and hit enter to go back to the search prompt"
+      connection.query(
+        `INSERT INTO employee(firstName, lastName, roleID, managerID) VALUES(?,?,(SELECT roleID FROM role WHERE position = ?), ?)`,
+        [firstName, lastName, position, manager],
+        (err, res) => {
+          if (err) throw err;
+          console.log(`Successfully added a new employee!`);
+          viewEmployees();
         }
-      ])
-      .then(answer => {
-        if (answer.action) {
-          runSearch();
-        }
-      });
-  });
+      );
+    });
+
+  function removeDepartment() {}
+
+  function removeRole() {}
+
+  function removeEmployee() {}
+
+  function viewDepartments() {
+    connection.query(`SELECT * FROM department`, (err, departments) => {
+      if (err) throw err;
+      const newTable = table.getTable(departments);
+      console.log(newTable);
+      inquirer
+        .prompt([
+          {
+            name: "action",
+            message: "Type yes and hit enter to go back to the search prompt"
+          }
+        ])
+        .then(answer => {
+          if (answer.action) {
+            runSearch();
+          }
+        });
+    });
+  }
+
+  function viewEmployees() {
+    connection.query(`SELECT * FROM employee`, (err, employee) => {
+      if (err) throw err;
+      const newTable = table.getTable(employee);
+      console.log(newTable);
+      inquirer
+        .prompt([
+          {
+            name: "action",
+            message: "Type yes and hit enter to go back to the search prompt"
+          }
+        ])
+        .then(answer => {
+          if (answer.action) {
+            runSearch();
+          }
+        });
+    });
+  }
+
+  function viewRoles() {
+    connection.query(`SELECT * FROM role`, (err, role) => {
+      if (err) throw err;
+      const newTable = table.getTable(role);
+      console.log(newTable);
+      inquirer
+        .prompt([
+          {
+            name: "action",
+            message: "Type yes and hit enter to go back to the search prompt"
+          }
+        ])
+        .then(answer => {
+          if (answer.action) {
+            runSearch();
+          }
+        });
+    });
+  }
 }
-
-function viewEmployees() {
-  connection.query(`SELECT * FROM employee`, (err, employee) => {
-    if (err) throw err;
-    const newTable = table.getTable(employee);
-    console.log(newTable);
-    inquirer
-      .prompt([
-        {
-          name: "action",
-          message: "Type yes and hit enter to go back to the search prompt"
-        }
-      ])
-      .then(answer => {
-        if (answer.action) {
-          runSearch();
-        }
-      });
-  });
-}
-
-function viewRoles() {
-  connection.query(`SELECT * FROM role`, (err, role) => {
-    if (err) throw err;
-    const newTable = table.getTable(role);
-    console.log(newTable);
-    inquirer
-      .prompt([
-        {
-          name: "action",
-          message: "Type yes and hit enter to go back to the search prompt"
-        }
-      ])
-      .then(answer => {
-        if (answer.action) {
-          runSearch();
-        }
-      });
-  });
-}
-
-function updateRoles() {}
