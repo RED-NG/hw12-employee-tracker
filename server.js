@@ -13,10 +13,10 @@ var connection = mysql.createConnection({
 
   // Your password
   password: "codingbootcamp1",
-  database: "company_trackerDB"
+  database: "company_trackerDB",
 });
 
-connection.connect(function(err) {
+connection.connect(function (err) {
   if (err) throw err;
   runSearch();
 });
@@ -25,7 +25,7 @@ function runSearch() {
   inquirer
     .prompt({
       name: "action",
-      type: "rawlist",
+      type: "list",
       message: "What would you like to do?",
       choices: [
         "View all departments",
@@ -35,36 +35,21 @@ function runSearch() {
         "Add a department",
         "Add a role",
         "Add an employee",
-        "Remove an employee",
-        "Remove a role",
-        "Remove a department",
-        "Exit application"
-      ]
+        "Exit application",
+      ],
     })
-    .then(function(answer) {
+    .then(function (answer) {
       switch (answer.action) {
         case "Add a department":
           addDepartment();
           break;
 
         case "Add a role":
-          addRole();
+          addRolePrompt();
           break;
 
         case "Add an employee":
           addEmployee();
-          break;
-
-        case "Remove a department":
-          removeDepartment();
-          break;
-
-        case "Remove a role":
-          removeRole();
-          break;
-
-        case "Remove an employee":
-          removeEmployee();
           break;
 
         case "View all departments":
@@ -90,18 +75,24 @@ function runSearch() {
     });
 }
 
+//to be completed
+function updateRoles() {
+  console.log("working on it");
+}
+
+//working
 function addDepartment() {
   inquirer
     .prompt({
       name: "name",
       type: "input",
-      message: "add a department"
+      message: "add a department",
     })
-    .then(function(res) {
+    .then(function (res) {
       connection.query(
         "INSERT INTO department (name) VALUE (?)",
         res.name,
-        function(err, res) {
+        function (err, res) {
           if (err) throw err;
           viewDepartments();
         }
@@ -109,37 +100,76 @@ function addDepartment() {
     });
 }
 
-function addRole() {}
+//working now
+function addRolePrompt() {
+  inquirer
+    .prompt([
+      {
+        name: "position",
+        message: "What is the name of the position you'd like to add?",
+      },
+      {
+        name: "salary",
+        message: "What is the yearly salary for this role?",
+      },
+      {
+        name: "department",
+        message:
+          "What department is this role associated with? (Enter (1) for Marketing, (2) for Operations, (3) for Finance, (4) for Sales or (5) for Human Resources)",
+      },
+    ])
+    .then((answer) => {
+      const position = answer.position.toString();
+      const salary = parseFloat(answer.salary);
+      const department = answer.department.toString();
+      addRole(position, salary, department);
+    });
+}
+
+function addRole(position, salary, department) {
+  connection.query(`SELECT * FROM role, department`, (err, role) => {
+    if (err) throw err;
+    connection.query(
+      `INSERT INTO role (position, salary, departmentID) VALUES(?, ?, ?)`,
+      [position, salary, department],
+      (err) => {
+        if (err) throw err;
+        viewRoles();
+        console.log("Successfully added the role into the roles table!");
+      }
+    );
+  });
+}
 
 function addEmployee() {
   inquirer
     .prompt([
       {
         name: "firstName",
-        message: "What is employees first name?"
+        message: "What is employees first name?",
       },
       {
         name: "lastName",
-        message: "What is employees last name?"
+        message: "What is employees last name?",
       },
       {
         name: "position",
-        message: "What is employees position within the company?"
+        message: "What is employees position within the company?",
       },
       {
         name: "manager",
         message:
-          "Who is their manager? Enter the id of the manager (enter 6, 7, 8, 15, or 17)"
-      }
+          "Who is their manager? Enter the id of the manager (enter 6, 7, 8, 15, or 17)",
+      },
     ])
-    .then(answer => {
+    .then((answer) => {
       const firstName = answer.firstName;
       const lastName = answer.lastName;
       const position = answer.position;
       const manager = answer.manager;
 
       connection.query(
-        `INSERT INTO employee(firstName, lastName, roleID, managerID) VALUES(?,?,(SELECT roleID FROM role WHERE position = ?), ?)`,
+        `INSERT INTO employee (firstName, lastName, roleID, managerID) VALUES (?, ?, (SELECT roleID FROM role WHERE position = ?), ?)`,
         [firstName, lastName, position, manager],
         (err, res) => {
           if (err) throw err;
@@ -148,70 +178,64 @@ function addEmployee() {
         }
       );
     });
+}
 
-  function removeDepartment() {}
+function viewDepartments() {
+  connection.query(`SELECT * FROM department`, (err, departments) => {
+    if (err) throw err;
+    const newTable = table.getTable(departments);
+    console.log(newTable);
+    inquirer
+      .prompt([
+        {
+          name: "action",
+          message: "Type yes and hit enter to go back to the search prompt",
+        },
+      ])
+      .then((answer) => {
+        if (answer.action) {
+          runSearch();
+        }
+      });
+  });
+}
 
-  function removeRole() {}
+function viewEmployees() {
+  connection.query(`SELECT * FROM employee`, (err, employee) => {
+    if (err) throw err;
+    const newTable = table.getTable(employee);
+    console.log(newTable);
+    inquirer
+      .prompt([
+        {
+          name: "action",
+          message: "Type yes and hit enter to go back to the search prompt",
+        },
+      ])
+      .then((answer) => {
+        if (answer.action) {
+          runSearch();
+        }
+      });
+  });
+}
 
-  function removeEmployee() {}
-
-  function viewDepartments() {
-    connection.query(`SELECT * FROM department`, (err, departments) => {
-      if (err) throw err;
-      const newTable = table.getTable(departments);
-      console.log(newTable);
-      inquirer
-        .prompt([
-          {
-            name: "action",
-            message: "Type yes and hit enter to go back to the search prompt"
-          }
-        ])
-        .then(answer => {
-          if (answer.action) {
-            runSearch();
-          }
-        });
-    });
-  }
-
-  function viewEmployees() {
-    connection.query(`SELECT * FROM employee`, (err, employee) => {
-      if (err) throw err;
-      const newTable = table.getTable(employee);
-      console.log(newTable);
-      inquirer
-        .prompt([
-          {
-            name: "action",
-            message: "Type yes and hit enter to go back to the search prompt"
-          }
-        ])
-        .then(answer => {
-          if (answer.action) {
-            runSearch();
-          }
-        });
-    });
-  }
-
-  function viewRoles() {
-    connection.query(`SELECT * FROM role`, (err, role) => {
-      if (err) throw err;
-      const newTable = table.getTable(role);
-      console.log(newTable);
-      inquirer
-        .prompt([
-          {
-            name: "action",
-            message: "Type yes and hit enter to go back to the search prompt"
-          }
-        ])
-        .then(answer => {
-          if (answer.action) {
-            runSearch();
-          }
-        });
-    });
-  }
+function viewRoles() {
+  connection.query(`SELECT * FROM role`, (err, role) => {
+    if (err) throw err;
+    const newTable = table.getTable(role);
+    console.log(newTable);
+    inquirer
+      .prompt([
+        {
+          name: "action",
+          message: "Type yes and hit enter to go back to the search prompt",
+        },
+      ])
+      .then((answer) => {
+        if (answer.action) {
+          runSearch();
+        }
+      });
+  });
 }
