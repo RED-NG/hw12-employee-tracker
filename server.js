@@ -111,7 +111,7 @@ function updateEmployee() {
       },
     ])
     .then(function (answer) {
-      db.query(
+      connection.query(
         "UPDATE employee SET firstName = ?, lastName = ?, roleID = ?, managerID = ? WHERE employeeID = ?",
         [
           answer.firstName,
@@ -153,7 +153,7 @@ function updateRoles() {
       },
     ])
     .then(function (answer) {
-      db.query(
+      connection.query(
         "UPDATE role SET position = ?, salary = ?, departmentID = ? WHERE roleID = ?",
         [answer.position, answer.salary, answer.departmentID, answer.roleID],
         (err) => {
