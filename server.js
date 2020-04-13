@@ -64,8 +64,12 @@ function runSearch() {
           viewRoles();
           break;
 
-        case "Update employee roles":
+        case "Update roles":
           updateRoles();
+          break;
+
+        case "Update employee":
+          updateEmployee();
           break;
 
         case "Exit application":
@@ -75,12 +79,90 @@ function runSearch() {
     });
 }
 
-//to be completed
-function updateRoles() {
-  console.log("working on it");
+//need to be checked
+function updateEmployee() {
+  viewEmployees();
+  inquirer
+    .prompt([
+      {
+        name: "employeeID",
+        type: "input",
+        message: "Enter the ID number of employee you wish to update",
+      },
+      {
+        name: "firstName",
+        type: "input",
+        message: "Enter new first name",
+      },
+      {
+        name: "lastName",
+        type: "input",
+        message: "Enter new last name",
+      },
+      {
+        name: "roleID",
+        type: "input",
+        message: "Enter new role ID",
+      },
+      {
+        name: "managerID",
+        type: "input",
+        message: "Enter new manager ID",
+      },
+    ])
+    .then(function (answer) {
+      db.query(
+        "UPDATE employee SET firstName = ?, lastName = ?, roleID = ?, managerID = ? WHERE employeeID = ?",
+        [
+          answer.firstName,
+          answer.lastName,
+          answer.roleID,
+          answer.managerID,
+          answer.employeeID,
+        ],
+        (err) => {
+          if (err) throw err;
+        }
+      );
+    });
 }
 
-//working
+//need to be checked
+function updateRoles() {
+  inquirer
+    .prompt([
+      {
+        name: "roleID",
+        type: "input",
+        message: "Enter the ID number of role you wish to update",
+      },
+      {
+        name: "position",
+        type: "input",
+        message: "Enter new role",
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "Enter new salary",
+      },
+      {
+        name: "departmentID",
+        type: "input",
+        message: "Enter new department ID",
+      },
+    ])
+    .then(function (answer) {
+      db.query(
+        "UPDATE role SET position = ?, salary = ?, departmentID = ? WHERE roleID = ?",
+        [answer.position, answer.salary, answer.departmentID, answer.roleID],
+        (err) => {
+          if (err) throw err;
+        }
+      );
+    });
+}
+
 function addDepartment() {
   inquirer
     .prompt({
@@ -88,10 +170,10 @@ function addDepartment() {
       type: "input",
       message: "add a department",
     })
-    .then(function (res) {
+    .then(function (answer) {
       connection.query(
         "INSERT INTO department (name) VALUE (?)",
-        res.name,
+        answer.name,
         function (err, res) {
           if (err) throw err;
           viewDepartments();
@@ -100,7 +182,7 @@ function addDepartment() {
     });
 }
 
-//working now
+//need to be checked
 function addRolePrompt() {
   inquirer
     .prompt([
@@ -110,7 +192,7 @@ function addRolePrompt() {
       },
       {
         name: "salary",
-        message: "What is the yearly salary for this role?",
+        message: "What is the salary for this role?",
       },
       {
         name: "department",
@@ -126,19 +208,17 @@ function addRolePrompt() {
     });
 }
 
+//need to be checked
 function addRole(position, salary, department) {
-  connection.query(`SELECT * FROM role, department`, (err, role) => {
-    if (err) throw err;
-    connection.query(
-      `INSERT INTO role (position, salary, departmentID) VALUES(?, ?, ?)`,
-      [position, salary, department],
-      (err) => {
-        if (err) throw err;
-        viewRoles();
-        console.log("Successfully added the role into the roles table!");
-      }
-    );
-  });
+  connection.query(
+    `INSERT INTO role (position, salary, departmentID) VALUES(?, ?, ?)`,
+    [position, salary, department],
+    (err) => {
+      if (err) throw err;
+      viewRoles();
+      console.log("Successfully added the role into the roles table!");
+    }
+  );
 }
 
 function addEmployee() {
