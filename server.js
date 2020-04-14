@@ -31,7 +31,8 @@ function runSearch() {
         "View all departments",
         "View all employees",
         "View all roles",
-        "Update employee roles",
+        "Update an employee",
+        "Update a role",
         "Add a department",
         "Add a role",
         "Add an employee",
@@ -64,11 +65,11 @@ function runSearch() {
           viewRoles();
           break;
 
-        case "Update roles":
-          updateRoles();
+        case "Update a role":
+          updateRole();
           break;
 
-        case "Update employee":
+        case "Update an employee":
           updateEmployee();
           break;
 
@@ -79,35 +80,36 @@ function runSearch() {
     });
 }
 
-//need to be checked
+//working
 function updateEmployee() {
-  viewEmployees();
   inquirer
     .prompt([
       {
         name: "employeeID",
         type: "input",
-        message: "Enter the ID number of employee you wish to update",
+        message:
+          "Enter the ID number of employee you wish to update (Keep in mind ID 14, 16, 20, 29, and 41 are managers)",
       },
       {
         name: "firstName",
         type: "input",
-        message: "Enter new first name",
+        message: "Enter the employee's new first name",
       },
       {
         name: "lastName",
         type: "input",
-        message: "Enter new last name",
+        message: "Enter the employee's new last name",
       },
       {
         name: "roleID",
         type: "input",
-        message: "Enter new role ID",
+        message: "Enter the employee's new role ID",
       },
       {
         name: "managerID",
         type: "input",
-        message: "Enter new manager ID",
+        message:
+          "Enter the manager ID the updated employee is associated with ((6) Human Resources Manager, (7) Project Manager, (8) Finance Manager, (15) Director of Sales, or (17) Chief Design Engineer)",
       },
     ])
     .then(function (answer) {
@@ -122,34 +124,38 @@ function updateEmployee() {
         ],
         (err) => {
           if (err) throw err;
+          console.log("Successfully updated role!");
+          viewEmployees();
         }
       );
     });
 }
 
-//need to be checked
-function updateRoles() {
+//working
+function updateRole() {
   inquirer
     .prompt([
       {
         name: "roleID",
         type: "input",
-        message: "Enter the ID number of role you wish to update",
+        message:
+          "Enter the ID number of role you wish to update (Enter a number from 1-21 keeping in mind 6, 7, 8, 15, and 17 are manager roles)",
       },
       {
         name: "position",
         type: "input",
-        message: "Enter new role",
+        message: "Enter the name of this new role",
       },
       {
         name: "salary",
         type: "input",
-        message: "Enter new salary",
+        message: "Enter the salary of this new role",
       },
       {
         name: "departmentID",
         type: "input",
-        message: "Enter new department ID",
+        message:
+          "Enter a department ID for this role (Enter a number from 1-5)",
       },
     ])
     .then(function (answer) {
@@ -158,17 +164,20 @@ function updateRoles() {
         [answer.position, answer.salary, answer.departmentID, answer.roleID],
         (err) => {
           if (err) throw err;
+          console.log("Successfully updated role!");
+          viewRoles();
         }
       );
     });
 }
 
+//working
 function addDepartment() {
   inquirer
     .prompt({
       name: "name",
       type: "input",
-      message: "add a department",
+      message: "Add a new department",
     })
     .then(function (answer) {
       connection.query(
@@ -182,7 +191,7 @@ function addDepartment() {
     });
 }
 
-//need to be checked
+//working
 function addRolePrompt() {
   inquirer
     .prompt([
@@ -208,7 +217,7 @@ function addRolePrompt() {
     });
 }
 
-//need to be checked
+//working
 function addRole(position, salary, department) {
   connection.query(
     `INSERT INTO role (position, salary, departmentID) VALUES(?, ?, ?)`,
@@ -221,6 +230,7 @@ function addRole(position, salary, department) {
   );
 }
 
+//working
 function addEmployee() {
   inquirer
     .prompt([
@@ -234,23 +244,19 @@ function addEmployee() {
       },
       {
         name: "position",
-        message: "What is employees position within the company?",
+        message:
+          "What is the employee's position within the company? (Use the employee table for reference)",
       },
       {
         name: "manager",
         message:
-          "Who is their manager? Enter the id of the manager (enter 6, 7, 8, 15, or 17)",
+          "Enter the employee's corresponding manager ID: (6) Human Resources Manager, (7) Project Manager, (8) Finance Manager, (15) Director of Sales, or (17) Chief Design Engineer",
       },
     ])
     .then((answer) => {
-      const firstName = answer.firstName;
-      const lastName = answer.lastName;
-      const position = answer.position;
-      const manager = answer.manager;
-
       connection.query(
         `INSERT INTO employee (firstName, lastName, roleID, managerID) VALUES (?, ?, (SELECT roleID FROM role WHERE position = ?), ?)`,
-        [firstName, lastName, position, manager],
+        [answer.firstName, answer.lastName, answer.position, answer.manager],
         (err, res) => {
           if (err) throw err;
           console.log(`Successfully added a new employee!`);
@@ -260,6 +266,7 @@ function addEmployee() {
     });
 }
 
+//working
 function viewDepartments() {
   connection.query(`SELECT * FROM department`, (err, departments) => {
     if (err) throw err;
@@ -280,6 +287,7 @@ function viewDepartments() {
   });
 }
 
+//working
 function viewEmployees() {
   connection.query(`SELECT * FROM employee`, (err, employee) => {
     if (err) throw err;
@@ -300,6 +308,7 @@ function viewEmployees() {
   });
 }
 
+//working
 function viewRoles() {
   connection.query(`SELECT * FROM role`, (err, role) => {
     if (err) throw err;
